@@ -1,4 +1,13 @@
 from typing import Dict, List, Set
+import re
+
+def is_valid_name(name:str):
+    if not re.match(r"^[a-zA-Z]+$", name):
+       return False
+    if len(name) > 255:
+        return False
+    return True
+
 
 def is_acyclic(nodes: List[str], edges: Dict[str, List[str]]) -> bool:
     visited: Set[str] = set()

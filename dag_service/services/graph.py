@@ -65,3 +65,25 @@ async def read_graph_adjacency_list_form(dag_id:int, session:AsyncSession) ->Adj
     return AdjacencyListResponse(
         adjacency_list=adjacency_list
     )
+
+async def read_graph_reverse_adjacency_list_form(dag_id:int, session:AsyncSession) ->AdjacencyListResponse:
+    nodes, edges = await read_graph(dag_id, session)
+    node_id_to_name = {node.node_id: node.name for node in nodes}
+    adjacency_list = {node.name:[] for node in nodes}
+    for edge in edges:
+        source_node = node_id_to_name[edge.source_node_id]
+        target_node = node_id_to_name[edge.target_node_id]
+        adjacency_list[target_node].append(source_node)
+    return AdjacencyListResponse(
+        adjacency_list=adjacency_list
+    )
+
+async def delete_node(dag_id:int,node_name:str, session:AsyncSession):
+    dag = await session.get(DAG, dag_id)
+    if not dag:
+        raise HTTPException(status_code=404)
+    node = (await session.execute(select(Node).filter_by(dag_id=dag_id, name=node_name))).scalar()
+    if not node:
+        raise HTTPException(status_code=404, detail={"message": f"Node '{node_name}' not found in graph {dag_id}"})
+    await session.delete(node)
+    await session.commit()

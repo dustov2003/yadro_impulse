@@ -1,10 +1,16 @@
 import re
 from pydantic import BaseModel, model_validator
 from typing import List, Dict
-from dag_service.utils import is_acyclic
+from dag_service.utils import is_acyclic, is_valid_name
 
 class Node(BaseModel):
     name: str
+    @model_validator(mode="after")
+    def validate_name(self):
+        if not is_valid_name(self.name):
+            raise ValueError('Unvalid node name')
+
+
 
 class Edge(BaseModel):
     source: str
@@ -15,7 +21,7 @@ class GraphCreate(BaseModel):
     edges: List[Edge]
 
     @model_validator(mode="after")
-    def validate_graph(cls, graph):
+    def validate_graph(self, graph):
 
         if len(graph.nodes) == 0:
             raise ValueError("Graph must contain at least one node")
@@ -25,12 +31,6 @@ class GraphCreate(BaseModel):
 
         if len(node_names) != len(node_set):
             raise ValueError("Duplicate node names found")
-
-        for name in node_names:
-            if not re.match(r"^[a-zA-Z]+$", name):
-                raise ValueError(f"Node name '{name}' must consist only of Latin alphabet characters")
-            if len(name) > 255:
-                raise ValueError(f"Node name '{name}' exceeds 255 characters")
 
         edge_set = set()
         for edge in graph.edges:

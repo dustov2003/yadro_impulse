@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Path, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from dag_service.db.connection import get_session
-from dag_service.services import insert_graph, read_graph_canonical_form, read_graph_adjacency_list_form
+from dag_service.services import *
 from dag_service.schemas import *
-
+from dag_service.utils import is_valid_name
 
 
 api_router = APIRouter(prefix="/graph")
@@ -38,13 +38,8 @@ async def get_adjacency_list(graph_id: int = Path(..., title="Graph Id"), sessio
     404: {"model": ErrorResponse, "description": "Graph entity not found"},
     422: {"model": HTTPValidationError, "description": "Validation Error"}
 })
-async def get_reverse_adjacency_list(graph_id: int = Path(..., title="Graph Id")):
-    """
-    Get Reverse Adjacency List
-
-    Ручка для чтения транспонированного графа в виде списка смежности.
-    """
-    pass  # Логика получения транспонированного списка смежности
+async def get_reverse_adjacency_list(graph_id: int = Path(..., title="Graph Id"), session: AsyncSession = Depends(get_session)):
+    return (await read_graph_reverse_adjacency_list_form(graph_id,session))
 
 
 @api_router.delete("/api/graph/{graph_id}/node/{node_name}", status_code=204, responses={
@@ -52,13 +47,12 @@ async def get_reverse_adjacency_list(graph_id: int = Path(..., title="Graph Id")
     404: {"model": ErrorResponse, "description": "Graph or node not found"},
     422: {"model": HTTPValidationError, "description": "Validation Error"}
 })
-async def delete_node(
+async def delete_node_in_graph(
         graph_id: int = Path(..., title="Graph Id"),
-        node_name: str = Path(..., title="Node Name")
+        node_name: str = Path(..., title="Node Name"),
+        session: AsyncSession = Depends(get_session)
 ):
-    """
-    Delete Node
-
-    Ручка для удаления вершины из графа по ее имени.
-    """
-    pass  # Логика удаления вершины
+    if is_valid_name(node_name):
+        await delete_node(graph_id, node_name, session)
+    else:
+        raise ValueError('Validation Error')
