@@ -25,6 +25,7 @@ async def create_graph(graph: GraphCreate,
     422: {"model": HTTPValidationError, "description": "Validation Error"}
 })
 async def get_graph(graph_id: int = Path(..., title="Graph Id"), session: AsyncSession = Depends(get_session)):
+    print('----------------------\n',(await count_nodes_by_dag_id(graph_id,session)),'\n----------------------\n')
     return (await  read_graph_canonical_form(graph_id, session))
 
 
@@ -55,4 +56,4 @@ async def delete_node_in_graph(
     if is_valid_name(node_name):
         await delete_node(graph_id, node_name, session)
     else:
-        raise ValueError('Validation Error')
+        raise HTTPException(status_code=422,detail="Unvalid node name")

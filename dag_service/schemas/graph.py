@@ -1,4 +1,3 @@
-import re
 from pydantic import BaseModel, model_validator
 from typing import List, Dict
 from dag_service.utils import is_acyclic, is_valid_name

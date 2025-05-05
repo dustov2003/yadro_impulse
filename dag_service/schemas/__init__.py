@@ -7,6 +7,7 @@ __all__ = [
     'AdjacencyListResponse',
     'ErrorResponse',
     'HTTPValidationError',
+    'ValidationError',
     'Node',
     'Edge'
 ]
