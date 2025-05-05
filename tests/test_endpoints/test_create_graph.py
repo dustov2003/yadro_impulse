@@ -51,7 +51,7 @@ class TestCreateGraph:
 
     def test_validation_error_sycle_in_graph(self, client):
         data = {
-            "nodes": [{"name": "A"}, {"name": "B"}, {"name": "С"}],
+            "nodes": [{"name": "A"}, {"name": "B"}, {"name": "C"}],
             "edges": [{"source": "A", "target": "B"}, {"source": "B", "target": "C"}, {"source": "C", "target": "A"}] # цикл  A -> B -> C -> A
         }
         response = client.post(url=self.get_url(), json=data)
@@ -59,7 +59,7 @@ class TestCreateGraph:
 
     def test_validation_error_empty_graph(self, client):
         data = {
-            "nodes": [{"name": "A"}, {"name": "B"}, {"name": "С"}]
+            "nodes": [{"name": "A"}, {"name": "B"}, {"name": "C"}]
         }
         response = client.post(url=self.get_url(), json=data)
         assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

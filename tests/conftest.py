@@ -105,7 +105,7 @@ async def session(session_factory_async):
 
 
 @pytest.fixture
-async def dag_sample(migrated_postgres, session: AsyncSession):
+async def dag_sample(migrated_postgres, session: AsyncSession) -> DAG:
     dag = DAG()
     session.add(dag)
     await session.flush()
@@ -116,16 +116,17 @@ async def dag_sample(migrated_postgres, session: AsyncSession):
     node_c = Node(dag_id=dag_id, name="C")
     node_d = Node(dag_id=dag_id, name="D")
     node_e = Node(dag_id=dag_id, name="E")
-    session.add_all([node_a, node_b, node_c, node_d, node_e])
+    nodes = [node_a, node_b, node_c, node_d, node_e]
+    session.add_all(nodes)
     await session.flush()
 
-    edge_ab = Edge(dag_id=dag_id, source="A", target="B")
-    edge_bc = Edge(dag_id=dag_id, source="B", target="C")
-    edge_cd = Edge(dag_id=dag_id, source="C", target="D")
-    edge_de = Edge(dag_id=dag_id, source="D", target="E")
-    edge_ac = Edge(dag_id=dag_id, source="A", target="C")
+    edge_ab = Edge(dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_b.node_id)
+    edge_bc = Edge(dag_id=dag_id, source_node_id=node_b.node_id, target_node_id=node_c.node_id)
+    edge_cd = Edge(dag_id=dag_id, source_node_id=node_c.node_id, target_node_id=node_d.node_id)
+    edge_de = Edge(dag_id=dag_id, source_node_id=node_d.node_id, target_node_id=node_e.node_id)
+    edge_ac = Edge(dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_c.node_id)
     session.add_all([edge_ab, edge_bc, edge_cd, edge_de, edge_ac])
     await session.flush()
 
     await session.commit()
-    return dag_id
+    return dag
