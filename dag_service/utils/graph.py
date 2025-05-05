@@ -1,9 +1,10 @@
-from typing import Dict, List, Set
 import re
+from typing import Dict, List, Set
 
-def is_valid_name(name:str):
+
+def is_valid_name(name: str):
     if not re.match(r"^[a-zA-Z]+$", name):
-       return False
+        return False
     if len(name) > 255:
         return False
     return True

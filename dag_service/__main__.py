@@ -1,12 +1,15 @@
 from logging import getLogger
+
 from fastapi import FastAPI
 from uvicorn import run
-from .endpoints import list_of_routes
-from .config import DefaultSettings,get_settings
+
 from dag_service.utils import get_hostname
 
+from .config import DefaultSettings, get_settings
+from .endpoints import list_of_routes
 
 logger = getLogger(__name__)
+
 
 def bind_routes(application: FastAPI, setting: DefaultSettings) -> None:
     for route in list_of_routes:

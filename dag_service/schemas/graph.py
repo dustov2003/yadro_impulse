@@ -1,20 +1,24 @@
+from typing import Dict, List
+
 from pydantic import BaseModel, model_validator
-from typing import List, Dict
+
 from dag_service.utils import is_acyclic, is_valid_name
+
 
 class Node(BaseModel):
     name: str
-    @model_validator(mode="after")
-    def validate_name(cls,node):
-        if not is_valid_name(node.name):
-            raise ValueError('Unvalid node name')
-        return node
 
+    @model_validator(mode="after")
+    def validate_name(cls, node):
+        if not is_valid_name(node.name):
+            raise ValueError("Unvalid node name")
+        return node
 
 
 class Edge(BaseModel):
     source: str
     target: str
+
 
 class GraphCreate(BaseModel):
     nodes: List[Node]
@@ -56,24 +60,30 @@ class GraphCreate(BaseModel):
 
         return graph
 
+
 class GraphCreateResponse(BaseModel):
     id: int
+
 
 class GraphReadResponse(BaseModel):
     id: int
     nodes: List[Node]
     edges: List[Edge]
 
+
 class AdjacencyListResponse(BaseModel):
     adjacency_list: Dict[str, List[str]]
 
+
 class ErrorResponse(BaseModel):
     message: str
+
 
 class ValidationError(BaseModel):
     loc: List[str | int]
     msg: str
     type: str
+
 
 class HTTPValidationError(BaseModel):
     detail: List[ValidationError]
