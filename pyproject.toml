@@ -17,8 +17,48 @@ alembic = "^1.15.2"
 psycopg2 = "^2.9.10"
 pylint = "^3.3.7"
 black = "^25.1.0"
+configargparse = "^1.7"
+pytest = "^8.3.5"
+mock = "^5.2.0"
+sqlalchemy-utils = "^0.41.2"
+httpx = "^0.28.1"
+pytest-asyncio = "^0.26.0"
+pytest-cov = "^6.1.1"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest]
+addopts = "--cov=shortener --cov-report html:coverage-report-html --cov-fail-under=80"
+python_files = "test_*.py"
+python_classes = ["*Test", "Test*"]
+python_functions = "test_*"
+testpaths = "tests/"
+
+[tool.coverage.report]
+exclude_lines = [
+    "# pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "def __unicode__",
+]
+show_missing = true
+skip_empty = true
+omit = [
+  "*/__init__.py",
+  "shortener/db/migrator/env.py",
+]
+
+[tool.coverage.html]
+directory = "pytest-cov-report"
+
+[tool.coverage.run]
+branch = true
+concurrency = ['thread', 'greenlet']
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+

@@ -10,7 +10,7 @@ api_router = APIRouter(prefix="/graph")
 
 
 @api_router.post(
-    "/api/graph/",
+    "",
     response_model=GraphCreateResponse,
     status_code=201,
     responses={
@@ -29,7 +29,7 @@ async def create_graph(
 
 
 @api_router.get(
-    "/api/graph/{graph_id}",
+    "/{graph_id}",
     response_model=GraphReadResponse,
     responses={
         200: {"model": GraphReadResponse, "description": "Successful Response"},
@@ -41,16 +41,11 @@ async def get_graph(
     graph_id: int = Path(..., title="Graph Id"),
     session: AsyncSession = Depends(get_session),
 ):
-    print(
-        "----------------------\n",
-        (await count_nodes_by_dag_id(graph_id, session)),
-        "\n----------------------\n",
-    )
     return await read_graph_canonical_form(graph_id, session)
 
 
 @api_router.get(
-    "/api/graph/{graph_id}/adjacency_list", response_model=AdjacencyListResponse
+    "/{graph_id}/adjacency_list", response_model=AdjacencyListResponse
 )
 async def get_adjacency_list(
     graph_id: int = Path(..., title="Graph Id"),
@@ -60,7 +55,7 @@ async def get_adjacency_list(
 
 
 @api_router.get(
-    "/api/graph/{graph_id}/reverse_adjacency_list",
+    "/{graph_id}/reverse_adjacency_list",
     response_model=AdjacencyListResponse,
     responses={
         200: {"model": AdjacencyListResponse, "description": "Successful Response"},
@@ -76,7 +71,7 @@ async def get_reverse_adjacency_list(
 
 
 @api_router.delete(
-    "/api/graph/{graph_id}/node/{node_name}",
+    "/{graph_id}/node/{node_name}",
     status_code=204,
     responses={
         204: {"description": "Successful Response"},

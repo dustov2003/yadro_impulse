@@ -20,7 +20,7 @@ def get_app() -> FastAPI:
     description = "Cервис для работы с направленным ациклическим графом (DAG)"
 
     application = FastAPI(
-        title="Url shortener",
+        title="DAG service",
         description=description,
         docs_url="/swagger",
         openapi_url="/openapi",

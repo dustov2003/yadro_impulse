@@ -63,7 +63,7 @@ test:
 	make db && $(TEST)
 
 test-cov:
-	make db && $(TEST) --cov=$(APPLICATION_NAME) --cov-report html --cov-fail-under=70
+	make db && $(TEST) --cov=$(APPLICATION_NAME) --cov-report html --cov-fail-under=80
 
 clean:
 	rm -fr *.egg-info dist
