@@ -53,3 +53,11 @@ class TestDeleteNodeInGraph:
     def test_node_not_found_in_graph(self, client, dag_sample):
         response = client.delete(url=self.get_url(dag_sample.dag_id,"NONEXISTENNODE"))  # тот dag_id которого точно нет
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_all_nodes(self, client, dag_sample):
+        nodes_name=['A','B','C','D','E']
+        for node in nodes_name:
+            response = client.delete(url=self.get_url(dag_sample.dag_id, node))
+            assert response.status_code == status.HTTP_204_NO_CONTENT
+        response = client.get(url=self.get_url_get_graph(dag_sample.dag_id))
+        assert response.status_code == status.HTTP_404_NOT_FOUND

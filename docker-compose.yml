@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     container_name: 'postgres'
@@ -7,3 +9,25 @@ services:
       - ./.env
     ports:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'dag-service'
+    restart: always
+    ports:
+      - '8080:8080'
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    command: >
+      sh -c "sleep 5 && cd /app/dag_service/db && poetry run alembic upgrade head && cd /app && uvicorn dag_service.__main__:app --host 0.0.0.0 --port 8080"
