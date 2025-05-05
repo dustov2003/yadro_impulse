@@ -6,9 +6,10 @@ from dag_service.utils import is_acyclic, is_valid_name
 class Node(BaseModel):
     name: str
     @model_validator(mode="after")
-    def validate_name(self):
-        if not is_valid_name(self.name):
+    def validate_name(cls,node):
+        if not is_valid_name(node.name):
             raise ValueError('Unvalid node name')
+        return node
 
 
 
@@ -21,7 +22,7 @@ class GraphCreate(BaseModel):
     edges: List[Edge]
 
     @model_validator(mode="after")
-    def validate_graph(self, graph):
+    def validate_graph(cls, graph):
 
         if len(graph.nodes) == 0:
             raise ValueError("Graph must contain at least one node")
