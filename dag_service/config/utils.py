@@ -7,4 +7,4 @@ def get_settings() -> DefaultSettings:
     env = environ.get("ENV", "local")
     if env == "local":
         return DefaultSettings()
-    return DefaultSettings()  # fallback to default
+    return DefaultSettings()
