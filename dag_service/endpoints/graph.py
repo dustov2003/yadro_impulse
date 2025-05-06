@@ -44,9 +44,7 @@ async def get_graph(
     return await read_graph_canonical_form(graph_id, session)
 
 
-@api_router.get(
-    "/{graph_id}/adjacency_list", response_model=AdjacencyListResponse
-)
+@api_router.get("/{graph_id}/adjacency_list", response_model=AdjacencyListResponse)
 async def get_adjacency_list(
     graph_id: int = Path(..., title="Graph Id"),
     session: AsyncSession = Depends(get_session),

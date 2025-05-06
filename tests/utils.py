@@ -8,11 +8,12 @@ from configargparse import Namespace
 
 from dag_service.config import get_settings
 
-
 PROJECT_PATH = Path(__file__).parent.parent.resolve()
 
 
-def make_alembic_config(cmd_opts: Union[Namespace, SimpleNamespace], base_path: Path = PROJECT_PATH) -> Config:
+def make_alembic_config(
+    cmd_opts: Union[Namespace, SimpleNamespace], base_path: Path = PROJECT_PATH
+) -> Config:
 
     database_uri = get_settings().database_uri_sync
 
@@ -24,7 +25,10 @@ def make_alembic_config(cmd_opts: Union[Namespace, SimpleNamespace], base_path: 
 
     alembic_location = config.get_main_option("script_location")
     if not os_path.isabs(alembic_location):
-        config.set_main_option("script_location", os_path.join(base_path, path_to_folder + alembic_location))
+        config.set_main_option(
+            "script_location",
+            os_path.join(base_path, path_to_folder + alembic_location),
+        )
     if cmd_opts.pg_url:
         config.set_main_option("sqlalchemy.url", database_uri)
 

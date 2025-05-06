@@ -1,3 +1,4 @@
+import unittest.mock as mock
 from asyncio import get_event_loop_policy
 from os import environ
 from types import SimpleNamespace
@@ -7,21 +8,18 @@ from uuid import uuid4
 import pytest
 from alembic.command import upgrade
 from alembic.config import Config
-import unittest.mock as mock
+from fastapi.testclient import TestClient
 from mock import AsyncMock
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
-from fastapi.testclient import TestClient
-
-from tests.utils import make_alembic_config
 
 import dag_service.utils as utils_module
 from dag_service.__main__ import get_app
 from dag_service.config.utils import get_settings
 from dag_service.db.connection import SessionManager
 from dag_service.db.models import *
-
+from tests.utils import make_alembic_config
 
 
 @pytest.fixture(scope="session")
@@ -63,7 +61,13 @@ async def run_async_upgrade(config: Config, database_uri: str):
 
 @pytest.fixture
 def alembic_config(postgres) -> Config:
-    cmd_options = SimpleNamespace(config="dag_service/db/", name="alembic", pg_url=postgres, raiseerr=False, x=None)
+    cmd_options = SimpleNamespace(
+        config="dag_service/db/",
+        name="alembic",
+        pg_url=postgres,
+        raiseerr=False,
+        x=None,
+    )
     return make_alembic_config(cmd_options)
 
 
@@ -82,7 +86,9 @@ async def migrated_postgres(postgres, alembic_config: Config):
 def client(migrated_postgres, manager: SessionManager = SessionManager()) -> TestClient:
     app = get_app()
     manager.refresh()
-    utils_module.check_website_exist = mock.AsyncMock(return_value=(True, "Status code < 400"))
+    utils_module.check_website_exist = mock.AsyncMock(
+        return_value=(True, "Status code < 400")
+    )
     return TestClient(app=app, base_url="http://test")
 
 
@@ -120,11 +126,21 @@ async def dag_sample(migrated_postgres, session: AsyncSession) -> DAG:
     session.add_all(nodes)
     await session.flush()
 
-    edge_ab = Edge(dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_b.node_id)
-    edge_bc = Edge(dag_id=dag_id, source_node_id=node_b.node_id, target_node_id=node_c.node_id)
-    edge_cd = Edge(dag_id=dag_id, source_node_id=node_c.node_id, target_node_id=node_d.node_id)
-    edge_de = Edge(dag_id=dag_id, source_node_id=node_d.node_id, target_node_id=node_e.node_id)
-    edge_ac = Edge(dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_c.node_id)
+    edge_ab = Edge(
+        dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_b.node_id
+    )
+    edge_bc = Edge(
+        dag_id=dag_id, source_node_id=node_b.node_id, target_node_id=node_c.node_id
+    )
+    edge_cd = Edge(
+        dag_id=dag_id, source_node_id=node_c.node_id, target_node_id=node_d.node_id
+    )
+    edge_de = Edge(
+        dag_id=dag_id, source_node_id=node_d.node_id, target_node_id=node_e.node_id
+    )
+    edge_ac = Edge(
+        dag_id=dag_id, source_node_id=node_a.node_id, target_node_id=node_c.node_id
+    )
     session.add_all([edge_ab, edge_bc, edge_cd, edge_de, edge_ac])
     await session.flush()
 

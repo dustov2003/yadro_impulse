@@ -60,10 +60,10 @@ open_db:
 	docker exec -it postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER)
 
 test:
-	make db && $(TEST)
+	$(TEST)
 
 test-cov:
-	make db && $(TEST) --cov=$(APPLICATION_NAME) --cov-report html --cov-fail-under=80
+	$(TEST) --cov=$(APPLICATION_NAME) --cov-report html --cov-fail-under=80
 
 clean:
 	rm -fr *.egg-info dist
