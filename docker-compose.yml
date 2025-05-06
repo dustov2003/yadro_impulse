@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: 'dag-service'
+    container_name: 'dag_service'
     restart: always
     ports:
       - '8080:8080'

@@ -37,8 +37,6 @@ help:
 	@echo -e "Usage: make [target] ...\n"
 	@perl -e '$(HELP_FUN)' $(MAKEFILE_LIST)
 
-db:
-	docker-compose -f docker-compose.yml up -d --remove-orphans
 
 lint:
 	poetry run python3 -m pylint $(CODE)
@@ -51,7 +49,7 @@ migrate:
 	cd $(APPLICATION_NAME)/db && alembic upgrade $(args)
 
 run:
-	poetry run python3 -m $(APPLICATION_NAME)
+	docker-compose up -d --build
 
 revision:
 	cd $(APPLICATION_NAME)/db && alembic revision --autogenerate
@@ -59,12 +57,14 @@ revision:
 open_db:
 	docker exec -it postgres psql -d $(POSTGRES_DB) -U $(POSTGRES_USER)
 
+open_service:
+	docker exec -it $(APPLICATION_NAME) /bin/bash
+
 test:
-	$(TEST)
+	make run && docker exec -it $(APPLICATION_NAME) /bin/bash -c "poetry run pytest tests/ -v"
 
 test-cov:
-	$(TEST) --cov=$(APPLICATION_NAME) --cov-report html --cov-fail-under=80
-
+	make run && docker exec -it $(APPLICATION_NAME) /bin/bash -c "poetry run pytest tests/ -v --cov=dag_service --cov-report html --cov-fail-under=80"
 clean:
 	rm -fr *.egg-info dist
 
