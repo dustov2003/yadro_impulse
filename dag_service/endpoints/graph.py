@@ -6,7 +6,7 @@ from dag_service.schemas import *
 from dag_service.services import *
 from dag_service.utils import is_valid_name
 
-api_router = APIRouter(prefix="/graph")
+api_router = APIRouter(prefix="/graph",tags=['Graph'])
 
 
 @api_router.post(
