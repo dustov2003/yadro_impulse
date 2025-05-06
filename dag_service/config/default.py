@@ -4,29 +4,18 @@ from pydantic_settings import BaseSettings
 
 
 class DefaultSettings(BaseSettings):
-
     ENV: str = environ.get("ENV", "local")
     PATH_PREFIX: str = environ.get("PATH_PREFIX", "/api")
     APP_HOST: str = environ.get("APP_HOST", "http://127.0.0.1")
     APP_PORT: int = int(environ.get("APP_PORT", 8080))
 
     POSTGRES_DB: str = environ.get("POSTGRES_DB", "dag_db")
+    POSTGRES_HOST: str = environ.get("POSTGRES_HOST", "localhost")
     POSTGRES_USER: str = environ.get("POSTGRES_USER", "user")
     POSTGRES_PORT: int = int(environ.get("POSTGRES_PORT", 5432))
     POSTGRES_PASSWORD: str = environ.get("POSTGRES_PASSWORD", "hackme")
     DB_CONNECT_RETRY: int = environ.get("DB_CONNECT_RETRY", 20)
     DB_POOL_SIZE: int = environ.get("DB_POOL_SIZE", 15)
-
-    @property
-    def POSTGRES_HOST(self) -> str:
-        host_from_env = environ.get("POSTGRES_HOST")
-        if host_from_env:
-            return host_from_env
-        return (
-            "localhost"
-            if self.ENV == "local"
-            else environ.get("POSTGRES_HOST", "localhost")
-        )
 
     @property
     def database_settings(self) -> dict:
